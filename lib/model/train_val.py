@@ -220,13 +220,16 @@ class SolverWrapper(object):
       os.remove(str(sfile_meta))
       ss_paths.remove(sfile)
 
-  def train_model(self, sess, max_iters):
+  def train_model(self, sess, max_iters): #这个是 训练的核心函数 
     # Build data layers for both training and validation set
     self.data_layer = RoIDataLayer(self.roidb, self.imdb.num_classes)
+    print("训练准备数据通过")
     self.data_layer_val = RoIDataLayer(self.valroidb, self.imdb.num_classes, random=True)
+    print("测试数据通过")
+    
 
     # Construct the computation graph
-    lr, train_op = self.construct_graph(sess)
+    lr, train_op = self.construct_graph(sess) #构建网络通过
 
     # Find previous snapshots if there is any to restore from
     lsf, nfiles, sfiles = self.find_previous()
@@ -256,18 +259,17 @@ class SolverWrapper(object):
 
       timer.tic()
       # Get training data, one batch at a time
-      blobs = self.data_layer.forward()
+      blobs = self.data_layer.forward() #这里开始报错 解决（原因是忘了加image 属性 导致没读出数据） #验证集不需要数据扩增 ！！前向运算
 
       now = time.time()
       if iter == 1 or now - last_summary_time > cfg.TRAIN.SUMMARY_INTERVAL:
         # Compute the graph with summary
         rpn_loss_cls, rpn_loss_box, loss_cls, loss_box, total_loss, summary = \
           self.net.train_step_with_summary(sess, blobs, train_op)
-        self.writer.add_summary(summary, float(iter))
         # Also check the summary on the validation set
-        blobs_val = self.data_layer_val.forward()
-        summary_val = self.net.get_summary(sess, blobs_val)
-        self.valwriter.add_summary(summary_val, float(iter))
+        blobs_val = self.data_layer_val.forward() #验证集的运算
+       
+        
         last_summary_time = now
       else:
         # Compute the graph without summary
@@ -304,15 +306,23 @@ class SolverWrapper(object):
 
 def get_training_roidb(imdb):
   """Returns a roidb (Region of Interest database) for use in training."""
+  print("数据增强之前")
+  print(len(imdb.roidb))
   if cfg.TRAIN.USE_FLIPPED:
     print('Appending horizontally-flipped training examples...') #这个函数扩增数据集 在imdb 基础上进一步封装 
-    imdb.append_flipped_images()
+    imdb.append_flipped_images() 
     print('done')
-
+  print("数据增强之后") #数据增强通过
+  
+  
+  print(len(imdb.roidb)) 
+  
   print('Preparing training data...') 
   rdl_roidb.prepare_roidb(imdb)
+  #print((imdb.roidb[5523]['image']))  测试为啥没有image 路径
+  
   print('done')
-
+ 
   return imdb.roidb
 
 

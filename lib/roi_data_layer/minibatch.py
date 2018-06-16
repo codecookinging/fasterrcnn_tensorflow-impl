@@ -3,6 +3,9 @@
 # Copyright (c) 2015 Microsoft
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ross Girshick and Xinlei Chen
+
+# 一张图片是一个minibatch 
+#图片 短边取600 长边取1000 进行缩放，不够的补0，然后保存缩放尺度，将相应的anchor 也进行相同尺度的缩放
 # --------------------------------------------------------
 
 """Compute minibatch blobs for training a Fast R-CNN network."""
@@ -56,7 +59,7 @@ def _get_image_blob(roidb, scale_inds):
   num_images = len(roidb) 
   processed_ims = []
   im_scales = []
-  for i in range(num_images):#读取图片矩阵 
+  for i in range(num_images):#读取图片   矩阵 
     im = cv2.imread(roidb[i]['image'])
     if roidb[i]['flipped']: #如果图片是水平对称的 那么将三维矩阵中第二维数据做对称操作
       im = im[:, ::-1, :]

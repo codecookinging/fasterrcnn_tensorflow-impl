@@ -1,6 +1,6 @@
 # --------------------------------------------------------
 # 
-# 在 roidb 里面加了了一些新东西比如宽高，利于训练
+# 在 roidb 里面加了 width height,image 我的IOU 用python代码实现，vc编译的时候报错，估计我的是vc2017 python 3.5对应 vc 2015
 # 
 # --------------------------------------------------------
 
@@ -45,6 +45,6 @@ def prepare_roidb(imdb): #加上图片的宽高
     nonzero_inds = np.where(max_overlaps > 0)[0]
     assert all(max_classes[nonzero_inds] != 0)
 
-    return roidb
+  return roidb
 
   

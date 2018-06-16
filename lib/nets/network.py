@@ -239,7 +239,7 @@ class Network(object):
       self._anchors = anchors
       self._anchor_length = anchor_length
 
-  def _build_network(self, is_training=True): #构建网络
+  def _build_network(self, is_training=True): #构建网络 backbone+rpn+rcnn 网络 
     # select initializers 是否以高斯分布来初始化
     if cfg.TRAIN.TRUNCATED:
       initializer = tf.truncated_normal_initializer(mean=0.0, stddev=0.01)
@@ -386,10 +386,10 @@ class Network(object):
 
     return cls_prob, bbox_pred
 
-  def _image_to_head(self, is_training, reuse=None):
+  def _image_to_head(self, is_training, reuse=None): #backbone 网络
     raise NotImplementedError
 
-  def _head_to_tail(self, pool5, is_training, reuse=None):
+  def _head_to_tail(self, pool5, is_training, reuse=None): 
     raise NotImplementedError
 
   def create_architecture(self, mode, num_classes, 
